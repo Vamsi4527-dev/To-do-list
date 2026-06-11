@@ -256,7 +256,7 @@ const Navbar = ({ dark, toggleDark, onHome, showHome, onAddTask }) => (
       <div className="flex items-center gap-2.5">
         <Logo dark={dark} />
         <span className={`font-bold text-lg tracking-tight ${dark ? "text-white" : "text-gray-900"}`}>
-          TaskFlow
+          TaskFlow 👍
         </span>
       </div>
 
