@@ -251,6 +251,7 @@ const ToastContainer = ({ toasts, removeToast }) => (
 // ── Navbar ────────────────────────────────────────────────────────────────────
 const Navbar = ({ dark, toggleDark, onHome, showHome, onAddTask }) => (
   <nav className="fixed top-3 left-0 right-0 z-50 px-4">
+    
     <div className={`flex items-center justify-between px-6 py-4 rounded-2xl ${dark ? "lg-header-dark" : "lg-header-light"}`}>
       {/* Left — logo + title */}
       <div className="flex items-center gap-2.5">
@@ -1029,7 +1030,7 @@ const AppPage = ({ dark, toggleDark, onHome, addToast }) => {
 
 // ── Home Page ─────────────────────────────────────────────────────────────────
 const HomePage = ({ dark, toggleDark, onEnter }) => (
-  <div className={`min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden transition-colors ${!dark ? "bg-gradient-to-br from-white via-gray-50 to-gray-100" : ""}`} style={dark ? { background: "#1c1c1e" } : {}}>
+  <div className={`min-h-screen flex flex-col items-center justify-center px-4 overflow-x-hidden transition-colors ${!dark ? "bg-gradient-to-br from-white via-gray-50 to-gray-100" : ""}`} style={dark ? { background: "#1c1c1e" } : {}}>
     <Navbar dark={dark} toggleDark={toggleDark} showHome={false} />
 
     {/* Subtle decorative blobs */}
@@ -1125,7 +1126,13 @@ export default function TaskFlow() {
   }, []);
 
   return (
-  <div className={`${dark ? "dark" : ""} overflow-x-hidden`}>
+  <div
+    className={`${dark ? "dark" : ""}`}
+    style={{
+      width: "100%",
+      overflowX: "hidden",
+    }}
+  >
       <GlobalStyles/>
       {page === "home" ? (
         <HomePage dark={dark} toggleDark={toggleDark} onEnter={() => setPage("app")} />
