@@ -55,7 +55,7 @@ const saveTasksToStorage = (tasks) => {
 
 // ── Logo SVG ─────────────────────────────────────────────────────────────────
 const Logo = ({ dark }) => (
-  <svg viewBox="0 0 36 36" fill="none" className="w-8 h-8">
+  <svg viewBox="0 0 36 36" fill="none" className="w-8 h-8" style={{ flexShrink: 0 }}>
     <rect
       x="2" y="2" width="32" height="32" rx="8"
       stroke={dark ? "white" : "black"}
@@ -71,12 +71,29 @@ const Logo = ({ dark }) => (
   </svg>
 );
 
-// ── Liquid Glass CSS ──────────────────────────────────────────────────────────
+// ── Global Styles ─────────────────────────────────────────────────────────────
 const GlobalStyles = () => (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-    * { font-family: 'Inter', sans-serif; }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+
+    #root {
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
 
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(18px); }
@@ -99,7 +116,6 @@ const GlobalStyles = () => (
       100% { opacity: 1; transform: scale(1) translateY(0); }
     }
 
-    /* ── Liquid Glass base ── */
     .lg-btn {
       position: relative;
       overflow: hidden;
@@ -131,7 +147,6 @@ const GlobalStyles = () => (
     }
     .lg-btn:active { transform: translateY(1px) scale(0.98); }
 
-    /* Light mode glass */
     .lg-light {
       background: rgba(255,255,255,0.45);
       box-shadow: 0 4px 24px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.8);
@@ -148,7 +163,6 @@ const GlobalStyles = () => (
       background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 100%);
     }
 
-    /* Primary CTA glass (white bg on dark, black bg on light) */
     .lg-primary-light {
       background: rgba(0,0,0,0.82);
       border-color: rgba(0,0,0,0.6);
@@ -166,14 +180,12 @@ const GlobalStyles = () => (
       background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.2) 100%);
     }
 
-    /* Danger glass */
     .lg-danger {
       background: rgba(220,38,38,0.75);
       border-color: rgba(254,202,202,0.4);
       color: white;
     }
 
-    /* Header/Navbar glass */
     .lg-header-light {
       background: rgba(255,255,255,0.60);
       backdrop-filter: blur(24px) saturate(200%);
@@ -192,6 +204,17 @@ const GlobalStyles = () => (
     .animate-fadeInUp { animation: fadeInUp 0.35s ease both; }
     .animate-toastIn  { animation: toastIn 0.3s cubic-bezier(.34,1.56,.64,1) both; }
     .animate-celebPop { animation: celebPop 0.5s cubic-bezier(.34,1.56,.64,1) both; }
+
+    /* Fix mobile overflow from date input */
+    input[type="date"] {
+      max-width: 100%;
+    }
+
+    /* Prevent any element from causing horizontal scroll */
+    .no-overflow {
+      overflow-x: hidden;
+      max-width: 100%;
+    }
   `}</style>
 );
 
@@ -204,17 +227,17 @@ const Toast = ({ message, type, onDone }) => {
 
   const icons = {
     success: (
-      <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg className="w-4 h-4" style={{ flexShrink: 0 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="6,12 10,16 18,8" />
       </svg>
     ),
     danger: (
-      <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg className="w-4 h-4" style={{ flexShrink: 0 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
         <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
       </svg>
     ),
     info: (
-      <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg className="w-4 h-4" style={{ flexShrink: 0 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><circle cx="12" cy="8" r="0.5" fill="currentColor" />
       </svg>
     ),
@@ -231,17 +254,29 @@ const Toast = ({ message, type, onDone }) => {
         border: "1px solid rgba(255,255,255,0.15)",
         boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.12)",
         color: "white",
+        maxWidth: "calc(100vw - 48px)",
       }}
     >
-      <span className={`w-2 h-2 rounded-full shrink-0 ${dotColor}`} />
+      <span className={`w-2 h-2 rounded-full ${dotColor}`} style={{ flexShrink: 0 }} />
       {icons[type] || icons.info}
-      <span>{message}</span>
+      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{message}</span>
     </div>
   );
 };
 
 const ToastContainer = ({ toasts, removeToast }) => (
-  <div className="fixed bottom-6 right-6 z-[200] flex flex-col gap-2 items-end pointer-events-none">
+  <div style={{
+    position: "fixed",
+    bottom: "24px",
+    right: "16px",
+    zIndex: 200,
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    alignItems: "flex-end",
+    pointerEvents: "none",
+    maxWidth: "calc(100vw - 32px)",
+  }}>
     {toasts.map((t) => (
       <Toast key={t.id} message={t.message} type={t.type} onDone={() => removeToast(t.id)} />
     ))}
@@ -249,34 +284,75 @@ const ToastContainer = ({ toasts, removeToast }) => (
 );
 
 // ── Navbar ────────────────────────────────────────────────────────────────────
-const Navbar = ({ dark, toggleDark, onHome, showHome, onAddTask }) => (
-  <nav className="fixed top-3 left-0 right-0 z-50 px-4">
-    
-    <div className={`flex items-center justify-between px-6 py-4 rounded-2xl ${dark ? "lg-header-dark" : "lg-header-light"}`}>
+const Navbar = ({ dark, toggleDark, onHome, showHome }) => (
+  <nav style={{
+    position: "fixed",
+    top: "12px",
+    left: 0,
+    right: 0,
+    zIndex: 50,
+    padding: "0 12px",
+    width: "100%",
+    boxSizing: "border-box",
+  }}>
+    <div
+      className={dark ? "lg-header-dark" : "lg-header-light"}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "12px 16px",
+        borderRadius: "16px",
+        width: "100%",
+        boxSizing: "border-box",
+      }}
+    >
       {/* Left — logo + title */}
-      <div className="flex items-center gap-2.5">
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
         <Logo dark={dark} />
-        <span className={`font-bold text-lg tracking-tight ${dark ? "text-white" : "text-gray-900"}`}>
+        <span style={{
+          fontWeight: 700,
+          fontSize: "18px",
+          letterSpacing: "-0.02em",
+          color: dark ? "white" : "#111827",
+          whiteSpace: "nowrap",
+        }}>
           TaskFlow 👍
         </span>
       </div>
 
       {/* Right — actions */}
-      <div className="flex items-center gap-2">
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
         {showHome && (
           <button
             onClick={onHome}
-            className={`lg-btn px-3.5 py-1.5 rounded-xl text-sm font-medium ${dark ? "lg-dark text-gray-200" : "lg-light text-gray-800"}`}
+            className={`lg-btn ${dark ? "lg-dark" : "lg-light"}`}
+            style={{
+              padding: "6px 14px",
+              borderRadius: "12px",
+              fontSize: "14px",
+              fontWeight: 500,
+              color: dark ? "#e5e7eb" : "#1f2937",
+              cursor: "pointer",
+            }}
           >
             Home
           </button>
         )}
 
-        {/* Theme toggle */}
         <button
           onClick={toggleDark}
           aria-label="Toggle theme"
-          className={`lg-btn p-2 rounded-xl ${dark ? "lg-dark text-white" : "lg-light text-gray-800"}`}
+          className={`lg-btn ${dark ? "lg-dark" : "lg-light"}`}
+          style={{
+            padding: "8px",
+            borderRadius: "12px",
+            color: dark ? "white" : "#1f2937",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           {dark ? (
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -309,13 +385,28 @@ const Modal = ({ open, onClose, children, dark }) => {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)" }}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 100,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "16px",
+        background: "rgba(0,0,0,0.55)",
+        backdropFilter: "blur(6px)",
+        WebkitBackdropFilter: "blur(6px)",
+        boxSizing: "border-box",
+      }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className={`animate-celebPop rounded-3xl shadow-2xl p-6 w-full max-w-sm`}
+        className="animate-celebPop"
         style={{
+          borderRadius: "24px",
+          padding: "24px",
+          width: "100%",
+          maxWidth: "360px",
           background: dark ? "rgba(18,18,18,0.85)" : "rgba(255,255,255,0.82)",
           backdropFilter: "blur(28px) saturate(200%)",
           WebkitBackdropFilter: "blur(28px) saturate(200%)",
@@ -323,6 +414,7 @@ const Modal = ({ open, onClose, children, dark }) => {
           boxShadow: dark
             ? "0 32px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.10)"
             : "0 32px 80px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,1)",
+          boxSizing: "border-box",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -335,29 +427,35 @@ const Modal = ({ open, onClose, children, dark }) => {
 // ── Delete Modal ──────────────────────────────────────────────────────────────
 const DeleteModal = ({ open, onClose, onConfirm, taskTitle, dark }) => (
   <Modal open={open} onClose={onClose} dark={dark}>
-    <div className="flex flex-col items-center text-center gap-4">
-      <div className={`w-14 h-14 rounded-full flex items-center justify-center ${dark ? "bg-white/10" : "bg-black/5"}`}>
-        <svg className={`w-7 h-7 ${dark ? "text-white" : "text-black"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "16px" }}>
+      <div style={{
+        width: "56px", height: "56px", borderRadius: "50%",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        background: dark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.05)",
+      }}>
+        <svg style={{ width: "28px", height: "28px", color: dark ? "white" : "black" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
           <path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
         </svg>
       </div>
       <div>
-        <h3 className={`text-lg font-bold mb-1 ${dark ? "text-white" : "text-gray-900"}`}>Delete Task?</h3>
-        <p className={`text-sm ${dark ? "text-gray-400" : "text-gray-600"}`}>
+        <h3 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "4px", color: dark ? "white" : "#111827" }}>Delete Task?</h3>
+        <p style={{ fontSize: "14px", color: dark ? "#9ca3af" : "#4b5563" }}>
           {taskTitle ? `"${taskTitle.length > 30 ? taskTitle.slice(0, 30) + "…" : taskTitle}" will be removed.` : "This action cannot be undone."}
         </p>
       </div>
-      <div className="flex gap-3 w-full">
+      <div style={{ display: "flex", gap: "12px", width: "100%" }}>
         <button
           onClick={onClose}
-          className={`lg-btn flex-1 px-4 py-2.5 rounded-xl text-sm font-medium ${dark ? "lg-dark text-gray-200" : "lg-light text-gray-700"}`}
+          className={`lg-btn ${dark ? "lg-dark" : "lg-light"}`}
+          style={{ flex: 1, padding: "10px 16px", borderRadius: "12px", fontSize: "14px", fontWeight: 500, color: dark ? "#e5e7eb" : "#374151", cursor: "pointer" }}
         >
           Cancel
         </button>
         <button
           onClick={onConfirm}
-          className="lg-btn lg-danger flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold"
+          className="lg-btn lg-danger"
+          style={{ flex: 1, padding: "10px 16px", borderRadius: "12px", fontSize: "14px", fontWeight: 600, cursor: "pointer" }}
         >
           Delete
         </button>
@@ -369,20 +467,21 @@ const DeleteModal = ({ open, onClose, onConfirm, taskTitle, dark }) => (
 // ── Celebration Modal ─────────────────────────────────────────────────────────
 const CelebrationModal = ({ open, onClose, dark }) => (
   <Modal open={open} onClose={onClose} dark={dark}>
-    <div className="flex flex-col items-center text-center gap-4">
-      <div className="text-5xl animate-bounce">✨</div>
-      <h3 className={`text-xl font-bold ${dark ? "text-white" : "text-gray-900"}`}>All Tasks Complete!</h3>
-      <p className={`text-sm ${dark ? "text-gray-400" : "text-gray-600"}`}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "16px" }}>
+      <div style={{ fontSize: "48px" }} className="animate-bounce">✨</div>
+      <h3 style={{ fontSize: "20px", fontWeight: 700, color: dark ? "white" : "#111827" }}>All Tasks Complete!</h3>
+      <p style={{ fontSize: "14px", color: dark ? "#9ca3af" : "#4b5563" }}>
         You've accomplished all your goals. Amazing work! 🎉
       </p>
-      <div className="flex gap-2 text-2xl">
+      <div style={{ display: "flex", gap: "8px", fontSize: "24px" }}>
         {["🎊","⭐","🌟","🎉","💫"].map((e, i) => (
           <span key={i} style={{ animationDelay: `${i * 0.1}s` }} className="animate-bounce inline-block">{e}</span>
         ))}
       </div>
       <button
         onClick={onClose}
-        className={`lg-btn px-8 py-2.5 rounded-xl text-sm font-semibold ${dark ? "lg-primary-dark" : "lg-primary-light"}`}
+        className={`lg-btn ${dark ? "lg-primary-dark" : "lg-primary-light"}`}
+        style={{ padding: "10px 32px", borderRadius: "12px", fontSize: "14px", fontWeight: 600, cursor: "pointer" }}
       >
         Continue
       </button>
@@ -417,16 +516,24 @@ const AddTaskModal = ({ open, onClose, onAdd, dark }) => {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const fieldClass = `w-full px-3 py-2 rounded-xl text-sm border outline-none transition-colors ${
-    dark
-      ? "bg-white/5 border-white/15 text-white placeholder-white/30 focus:border-white/40"
-      : "bg-black/5 border-black/10 text-gray-900 placeholder-gray-500 focus:border-black/30"
-  }`;
+  const fieldStyle = {
+    width: "100%",
+    padding: "8px 12px",
+    borderRadius: "12px",
+    fontSize: "14px",
+    border: dark ? "1px solid rgba(255,255,255,0.15)" : "1px solid rgba(0,0,0,0.10)",
+    outline: "none",
+    background: dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+    color: dark ? "white" : "#111827",
+    boxSizing: "border-box",
+    WebkitAppearance: "none",
+    appearance: "none",
+  };
 
   return (
     <Modal open={open} onClose={onClose} dark={dark}>
-      <h3 className={`text-lg font-bold mb-4 ${dark ? "text-white" : "text-gray-900"}`}>New Task</h3>
-      <div className="flex flex-col gap-3">
+      <h3 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "16px", color: dark ? "white" : "#111827" }}>New Task</h3>
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         <input
           ref={inputRef}
           type="text"
@@ -435,41 +542,48 @@ const AddTaskModal = ({ open, onClose, onAdd, dark }) => {
           onKeyDown={(e) => { if (e.key === "Enter") handleAdd(); }}
           placeholder="What needs to be done?"
           aria-label="New task title"
-          className={`${fieldClass} px-4 py-3 ${shake ? "animate-[shake_0.3s_ease]" : ""}`}
+          style={{
+            ...fieldStyle,
+            padding: "12px 16px",
+            animation: shake ? "shake 0.3s ease" : "none",
+          }}
         />
-        <div className="grid grid-cols-3 gap-2">
-          <select value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Category" className={fieldClass}>
+        {/* Stacked selects on mobile for better UX */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+          <select value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Category" style={fieldStyle}>
             <option value="personal">🏠 Personal</option>
             <option value="study">📚 Study</option>
             <option value="work">💼 Work</option>
             <option value="shopping">🛒 Shopping</option>
             <option value="other">📌 Other</option>
           </select>
-          <select value={priority} onChange={(e) => setPriority(e.target.value)} aria-label="Priority" className={fieldClass}>
+          <select value={priority} onChange={(e) => setPriority(e.target.value)} aria-label="Priority" style={fieldStyle}>
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
           </select>
-          <input
-            type="date"
-            value={due}
-            min={today}
-            onChange={(e) => setDue(e.target.value)}
-            aria-label="Due date"
-            className={fieldClass}
-          />
         </div>
+        <input
+          type="date"
+          value={due}
+          min={today}
+          onChange={(e) => setDue(e.target.value)}
+          aria-label="Due date"
+          style={{ ...fieldStyle, colorScheme: dark ? "dark" : "light" }}
+        />
       </div>
-      <div className="flex gap-3 mt-5">
+      <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
         <button
           onClick={onClose}
-          className={`lg-btn flex-1 px-4 py-2.5 rounded-xl text-sm font-medium ${dark ? "lg-dark text-gray-200" : "lg-light text-gray-700"}`}
+          className={`lg-btn ${dark ? "lg-dark" : "lg-light"}`}
+          style={{ flex: 1, padding: "10px 16px", borderRadius: "12px", fontSize: "14px", fontWeight: 500, color: dark ? "#e5e7eb" : "#374151", cursor: "pointer" }}
         >
           Cancel
         </button>
         <button
           onClick={handleAdd}
-          className={`lg-btn flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold ${dark ? "lg-primary-dark" : "lg-primary-light"}`}
+          className={`lg-btn ${dark ? "lg-primary-dark" : "lg-primary-light"}`}
+          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "10px 16px", borderRadius: "12px", fontSize: "14px", fontWeight: 600, cursor: "pointer" }}
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -482,8 +596,8 @@ const AddTaskModal = ({ open, onClose, onAdd, dark }) => {
 };
 
 // ── Task Item ─────────────────────────────────────────────────────────────────
-const priorityStipe = { high: "bg-black", medium: "bg-gray-500", low: "bg-gray-300" };
-const priorityStipeDark = { high: "bg-white", medium: "bg-gray-400", low: "bg-gray-600" };
+const priorityStripe = { high: "#111827", medium: "#6b7280", low: "#d1d5db" };
+const priorityStripeDark = { high: "#ffffff", medium: "#9ca3af", low: "#4b5563" };
 
 const TaskItem = ({ task, dark, onToggle, onDelete, onEdit, onDragStart, onDragOver, onDragLeave, onDrop, onDragEnd, animDelay }) => {
   const [editing, setEditing] = useState(false);
@@ -506,7 +620,7 @@ const TaskItem = ({ task, dark, onToggle, onDelete, onEdit, onDragStart, onDragO
 
   const dueDateStr = task.due ? formatDate(task.due) : "";
   const overdue = task.due && !task.completed && isOverdue(task.due);
-  const stripes = dark ? priorityStipeDark : priorityStipe;
+  const stripes = dark ? priorityStripeDark : priorityStripe;
 
   return (
     <li
@@ -517,37 +631,58 @@ const TaskItem = ({ task, dark, onToggle, onDelete, onEdit, onDragStart, onDragO
       onDragLeave={onDragLeave}
       onDrop={onDrop}
       onDragEnd={onDragEnd}
-      style={{ animationDelay: `${animDelay}ms` }}
-      className={`group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all cursor-grab active:cursor-grabbing animate-fadeInUp ${
-        task.completed ? "opacity-55" : ""
-      } ${
-        dark
-          ? "bg-white/5 border-white/8 hover:border-white/20 hover:bg-white/8"
-          : "bg-white/70 border-black/8 hover:border-black/15 hover:shadow-sm"
-      }`}
+      style={{
+        animationDelay: `${animDelay}ms`,
+        display: "flex",
+        alignItems: "center",
+        gap: "12px",
+        padding: "14px 16px",
+        borderRadius: "16px",
+        border: dark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.08)",
+        background: dark ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.70)",
+        opacity: task.completed ? 0.55 : 1,
+        cursor: "grab",
+        width: "100%",
+        boxSizing: "border-box",
+        listStyle: "none",
+      }}
+      className="animate-fadeInUp"
     >
       {/* Priority stripe */}
-      <div className={`w-1 self-stretch rounded-full shrink-0 ${stripes[task.priority]}`} />
+      <div style={{
+        width: "4px",
+        alignSelf: "stretch",
+        borderRadius: "4px",
+        flexShrink: 0,
+        background: stripes[task.priority],
+      }} />
 
       {/* Checkbox */}
       <button
         onClick={() => onToggle(task.id)}
         aria-label={task.completed ? "Mark incomplete" : "Mark complete"}
-        className={`lg-btn shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all ${
-          task.completed
-            ? dark ? "lg-primary-dark" : "lg-primary-light"
-            : dark ? "lg-dark" : "lg-light"
-        }`}
+        className={`lg-btn ${task.completed ? (dark ? "lg-primary-dark" : "lg-primary-light") : (dark ? "lg-dark" : "lg-light")}`}
+        style={{
+          flexShrink: 0,
+          width: "24px",
+          height: "24px",
+          borderRadius: "50%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+          padding: 0,
+        }}
       >
         {task.completed && (
-          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <svg style={{ width: "14px", height: "14px" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="6,12 10,16 18,8" />
           </svg>
         )}
       </button>
 
       {/* Content */}
-      <div className="flex-1 min-w-0">
+      <div style={{ flex: 1, minWidth: 0 }}>
         {editing ? (
           <input
             ref={editRef}
@@ -559,37 +694,65 @@ const TaskItem = ({ task, dark, onToggle, onDelete, onEdit, onDragStart, onDragO
             }}
             onBlur={() => finishEdit(true)}
             aria-label="Edit task title"
-            className={`w-full px-2 py-1 rounded-lg text-sm border outline-none ${
-              dark ? "bg-white/10 border-white/20 text-white" : "bg-black/5 border-black/15 text-gray-900"
-            }`}
+            style={{
+              width: "100%",
+              padding: "4px 8px",
+              borderRadius: "8px",
+              fontSize: "14px",
+              border: dark ? "1px solid rgba(255,255,255,0.20)" : "1px solid rgba(0,0,0,0.15)",
+              outline: "none",
+              background: dark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.05)",
+              color: dark ? "white" : "#111827",
+              boxSizing: "border-box",
+            }}
           />
         ) : (
           <span
             onDoubleClick={() => setEditing(true)}
-            className={`block text-sm font-medium truncate ${task.completed ? "line-through" : ""} ${dark ? "text-gray-100" : "text-gray-900"}`}
+            style={{
+              display: "block",
+              fontSize: "14px",
+              fontWeight: 500,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              textDecoration: task.completed ? "line-through" : "none",
+              color: dark ? "#f3f4f6" : "#111827",
+            }}
           >
             {task.title}
           </span>
         )}
-        <div className="flex items-center flex-wrap gap-1.5 mt-1.5">
-          <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-medium ${dark ? "bg-white/10 text-gray-300" : "bg-black/8 text-gray-700"}`}>
+        <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px", marginTop: "6px" }}>
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: "2px",
+            padding: "2px 8px", borderRadius: "999px", fontSize: "12px", fontWeight: 500,
+            background: dark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)",
+            color: dark ? "#d1d5db" : "#374151",
+          }}>
             {categoryEmoji[task.category]} {capitalize(task.category)}
           </span>
-          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-            task.priority === "high"
-              ? dark ? "bg-white/15 text-white" : "bg-black/15 text-gray-900"
+          <span style={{
+            padding: "2px 8px", borderRadius: "999px", fontSize: "12px", fontWeight: 500,
+            background: task.priority === "high"
+              ? dark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.15)"
               : task.priority === "medium"
-              ? dark ? "bg-white/10 text-gray-300" : "bg-black/8 text-gray-700"
-              : dark ? "bg-white/6 text-gray-500" : "bg-black/5 text-gray-600"
-          }`}>
+              ? dark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)"
+              : dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)",
+            color: task.priority === "high"
+              ? dark ? "white" : "#111827"
+              : task.priority === "medium"
+              ? dark ? "#d1d5db" : "#374151"
+              : dark ? "#6b7280" : "#6b7280",
+          }}>
             {capitalize(task.priority)}
           </span>
           {dueDateStr && (
-            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-              overdue
-                ? "bg-red-500/20 text-red-600"
-                : dark ? "bg-white/8 text-gray-400" : "bg-black/6 text-gray-600"
-            }`}>
+            <span style={{
+              padding: "2px 8px", borderRadius: "999px", fontSize: "12px", fontWeight: 500,
+              background: overdue ? "rgba(239,68,68,0.20)" : dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)",
+              color: overdue ? "#ef4444" : dark ? "#9ca3af" : "#6b7280",
+            }}>
               {overdue ? "⚠ " : "📅 "}{dueDateStr}
             </span>
           )}
@@ -597,14 +760,14 @@ const TaskItem = ({ task, dark, onToggle, onDelete, onEdit, onDragStart, onDragO
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-1">
+      <div style={{ display: "flex", alignItems: "center", gap: "4px", flexShrink: 0 }}>
         <button
           onClick={() => setEditing(true)}
           aria-label="Edit task"
-          title="Edit"
-          className={`lg-btn p-1.5 rounded-lg ${dark ? "lg-dark text-gray-300" : "lg-light text-gray-600"}`}
+          className={`lg-btn ${dark ? "lg-dark" : "lg-light"}`}
+          style={{ padding: "6px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: dark ? "#d1d5db" : "#4b5563" }}
         >
-          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg style={{ width: "14px", height: "14px" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
           </svg>
@@ -612,10 +775,10 @@ const TaskItem = ({ task, dark, onToggle, onDelete, onEdit, onDragStart, onDragO
         <button
           onClick={() => onDelete(task.id)}
           aria-label="Delete task"
-          title="Delete"
-          className="lg-btn lg-danger p-1.5 rounded-lg"
+          className="lg-btn lg-danger"
+          style={{ padding: "6px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
         >
-          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg style={{ width: "14px", height: "14px" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="3 6 5 6 21 6" />
             <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
             <path d="M10 11v6" /><path d="M14 11v6" />
@@ -629,42 +792,27 @@ const TaskItem = ({ task, dark, onToggle, onDelete, onEdit, onDragStart, onDragO
 
 // ── Empty State ───────────────────────────────────────────────────────────────
 const EmptyState = ({ dark }) => (
-  <div
-    className={`rounded-3xl border min-h-[380px] flex flex-col items-center justify-center text-center p-12 ${
-      dark
-        ? "bg-white/[0.03] border-white/10"
-        : "bg-white/70 border-black/10"
-    }`}
-  >
-    <svg
-      className={`w-24 h-24 mb-6 ${
-        dark ? "text-gray-500" : "text-gray-400"
-      }`}
-      viewBox="0 0 80 80"
-      fill="none"
-    >
+  <div style={{
+    borderRadius: "24px",
+    border: dark ? "1px solid rgba(255,255,255,0.10)" : "1px solid rgba(0,0,0,0.10)",
+    minHeight: "320px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center",
+    padding: "48px 24px",
+    background: dark ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.70)",
+  }}>
+    <svg style={{ width: "80px", height: "80px", marginBottom: "24px", color: dark ? "#6b7280" : "#9ca3af" }} viewBox="0 0 80 80" fill="none">
       <rect x="20" y="10" width="40" height="52" rx="6" stroke="currentColor" strokeWidth="3" />
       <rect x="32" y="6" width="16" height="8" rx="4" fill="currentColor" opacity="0.4" />
       <line x1="30" y1="30" x2="50" y2="30" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
       <line x1="30" y1="40" x2="44" y2="40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
       <polyline points="28,50 34,56 52,42" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
-
-    <h2
-      className={`text-4xl font-bold mb-3 ${
-        dark ? "text-white" : "text-gray-900"
-      }`}
-    >
-      All Clear!
-    </h2>
-
-    <p
-      className={`text-base ${
-        dark ? "text-gray-400" : "text-gray-500"
-      }`}
-    >
-      Add your first task to get started
-    </p>
+    <h2 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px", color: dark ? "white" : "#111827" }}>All Clear!</h2>
+    <p style={{ fontSize: "15px", color: dark ? "#9ca3af" : "#6b7280" }}>Add your first task to get started</p>
   </div>
 );
 
@@ -677,8 +825,6 @@ const AppPage = ({ dark, toggleDark, onHome, addToast }) => {
   const [addOpen, setAddOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [celebOpen, setCelebOpen] = useState(false);
-  const [selectMode, setSelectMode] = useState(false);
-  const [selectedIds, setSelectedIds] = useState([]);
   const [deleteAllOpen, setDeleteAllOpen] = useState(false);
   const prevAllDone = useRef(false);
   const dragSrcId = useRef(null);
@@ -717,10 +863,11 @@ const AppPage = ({ dark, toggleDark, onHome, addToast }) => {
   const handleDragStart = (e, id) => {
     dragSrcId.current = id;
     e.dataTransfer.effectAllowed = "move";
-    e.currentTarget.classList.add("opacity-50", "scale-95");
+    e.currentTarget.style.opacity = "0.5";
   };
   const handleDragOver = (e) => {
-    e.preventDefault(); e.dataTransfer.dropEffect = "move";
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
     e.currentTarget.style.outline = "2px solid rgba(128,128,128,0.5)";
     e.currentTarget.style.outlineOffset = "2px";
   };
@@ -745,7 +892,7 @@ const AppPage = ({ dark, toggleDark, onHome, addToast }) => {
     });
   };
   const handleDragEnd = (e) => {
-    e.currentTarget.classList.remove("opacity-50", "scale-95");
+    e.currentTarget.style.opacity = "1";
     dragSrcId.current = null;
   };
 
@@ -772,93 +919,112 @@ const AppPage = ({ dark, toggleDark, onHome, addToast }) => {
   const pending = total - completed;
   const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
   const deleteTask = tasks.find((t) => t.id === deleteTarget);
-  const filterBtns = ["all", "active", "completed"];
+  const filterBtns = [
+    { key: "all", label: "All" },
+    { key: "active", label: "Active" },
+    { key: "completed", label: "Done" },
+  ];
 
-  const cardBase = dark
-    ? "bg-white/4 border-white/8 backdrop-blur-sm"
-    : "bg-white/75 border-black/6 backdrop-blur-sm shadow-sm";
+  const glassCard = dark ? {
+    background: "rgba(38,38,40,0.55)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    border: "1px solid rgba(255,255,255,0.10)",
+    boxShadow: "0 4px 24px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08)",
+  } : {
+    background: "rgba(255,255,255,0.75)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    border: "1px solid rgba(255,255,255,0.85)",
+    boxShadow: "0 4px 24px rgba(0,0,0,0.07), inset 0 1px 0 rgba(255,255,255,1)",
+  };
+
+  const inputStyle = {
+    width: "100%",
+    padding: "8px 12px",
+    borderRadius: "12px",
+    fontSize: "14px",
+    border: dark ? "1px solid rgba(255,255,255,0.10)" : "1px solid rgba(0,0,0,0.08)",
+    outline: "none",
+    background: dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
+    color: dark ? "white" : "#111827",
+    boxSizing: "border-box",
+    WebkitAppearance: "none",
+    appearance: "none",
+  };
 
   return (
-    <div className={`min-h-screen transition-colors ${!dark ? "bg-gradient-to-br from-gray-50 via-white to-gray-100" : ""}`} style={dark ? { background: "#1c1c1e" } : {}}>
-      <Navbar dark={dark} toggleDark={toggleDark} onHome={onHome} showHome onAddTask={() => setAddOpen(true)} />
+    <div style={{
+      minHeight: "100vh",
+      width: "100%",
+      maxWidth: "100vw",
+      overflowX: "hidden",
+      background: dark ? "#1c1c1e" : "linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%)",
+      boxSizing: "border-box",
+    }}>
+      <Navbar dark={dark} toggleDark={toggleDark} onHome={onHome} showHome={true} />
 
-      <div className="w-full max-w-2xl mx-auto px-4 pt-24 pb-8 flex flex-col gap-4 min-h-[calc(100vh-120px)] overflow-x-hidden">
+      <div style={{
+        width: "100%",
+        maxWidth: "640px",
+        margin: "0 auto",
+        padding: "80px 16px 100px",
+        boxSizing: "border-box",
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px",
+      }}>
 
-        {/* Stats — outer glass wrapper with 4 individual cards + progress bar */}
-        <div
-          className="rounded-3xl p-4 border"
-          style={dark ? {
-            background: "rgba(38,38,40,0.55)",
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
-            border: "1px solid rgba(255,255,255,0.10)",
-            boxShadow: "0 4px 24px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08)",
-          } : {
-            background: "rgba(255,255,255,0.60)",
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
-            border: "1px solid rgba(255,255,255,0.85)",
-            boxShadow: "0 4px 24px rgba(0,0,0,0.07), inset 0 1px 0 rgba(255,255,255,1)",
-          }}
-        >
-          {/* 4 individual stat cards */}
-          <div className="grid grid-cols-4 gap-3 mb-3">
+        {/* Stats */}
+        <div style={{ ...glassCard, borderRadius: "24px", padding: "16px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", marginBottom: "12px" }}>
             {[
-              { label: "Total",    value: total },
-              { label: "Pending",  value: pending },
-              { label: "Done",     value: completed },
-              { label: "Progress", value: `${pct}%` },
-            ].map(({ label, value }) => (
+              { label: "Total", value: total, color: dark ? "white" : "#10b981" },
+              { label: "Pending", value: pending, color: dark ? "white" : "#f59e0b" },
+              { label: "Done", value: completed, color: dark ? "white" : "#10b981" },
+              { label: "Progress", value: `${pct}%`, color: dark ? "white" : "#111827" },
+            ].map(({ label, value, color }) => (
               <div
                 key={label}
-                className="lg-btn flex flex-col items-center py-4 px-3 rounded-2xl border"
-                style={dark ? {
-                  background: "rgba(255,255,255,0.06)",
-                  border: "1px solid rgba(255,255,255,0.10)",
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08)",
-                } : {
-                  background: "rgba(255,255,255,0.75)",
-                  border: "1px solid rgba(0,0,0,0.07)",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,1)",
+                className="lg-btn"
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  padding: "14px 8px",
+                  borderRadius: "16px",
+                  background: dark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.75)",
+                  border: dark ? "1px solid rgba(255,255,255,0.10)" : "1px solid rgba(0,0,0,0.07)",
+                  boxShadow: dark ? "inset 0 1px 0 rgba(255,255,255,0.08)" : "0 2px 8px rgba(0,0,0,0.06)",
                 }}
               >
-                <span className={`text-2xl font-bold leading-none tracking-tight ${
-                  dark
-                    ? "text-white"
-                    : label === "Pending"
-                        ? "text-amber-500"
-                        : label === "Progress"
-                            ? "text-gray-900"
-                            : "text-emerald-500"
-                  }`}>{value}
-                </span>
-                <span className={`text-xs mt-2 font-medium ${dark ? "text-gray-400" : "text-gray-600"}`}>
-                  {label}
-                </span>
+                <span style={{ fontSize: "22px", fontWeight: 700, lineHeight: 1, color }}>{value}</span>
+                <span style={{ fontSize: "11px", marginTop: "6px", fontWeight: 500, color: dark ? "#9ca3af" : "#6b7280" }}>{label}</span>
               </div>
             ))}
           </div>
-
-          {/* Progress bar inside wrapper */}
-          <div className="flex items-center gap-3 px-1">
-            <div className={`flex-1 h-2 rounded-full overflow-hidden ${dark ? "bg-white/10" : "bg-black/8"}`}>
-              <div
-                className={`h-full rounded-full transition-all duration-700 ease-out ${
-                    dark ? "bg-white" : "bg-emerald-500"
-                    }`}
-                style={{ width: `${pct}%` }}
-              />
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "0 4px" }}>
+            <div style={{ flex: 1, height: "8px", borderRadius: "999px", overflow: "hidden", background: dark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)" }}>
+              <div style={{
+                height: "100%",
+                width: `${pct}%`,
+                borderRadius: "999px",
+                background: dark ? "white" : "#10b981",
+                transition: "width 0.7s ease",
+              }} />
             </div>
-            <span className={`text-xs font-semibold tabular-nums shrink-0 ${dark ? "text-gray-400" : "text-gray-700"}`}>
-              {pct}%
-            </span>
+            <span style={{ fontSize: "12px", fontWeight: 600, flexShrink: 0, color: dark ? "#9ca3af" : "#374151" }}>{pct}%</span>
           </div>
         </div>
 
         {/* Toolbar */}
-        <div className={`rounded-3xl border p-5 flex flex-col gap-4 ${cardBase}`}>
-          <div className="relative flex-1">
-            <svg className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${dark ? "text-gray-500" : "text-gray-500"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <div style={{ ...glassCard, borderRadius: "24px", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
+          {/* Search */}
+          <div style={{ position: "relative" }}>
+            <svg style={{
+              position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)",
+              width: "16px", height: "16px", color: "#9ca3af", pointerEvents: "none",
+            }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
             <input
@@ -867,70 +1033,59 @@ const AppPage = ({ dark, toggleDark, onHome, addToast }) => {
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search tasks…"
               aria-label="Search tasks"
-              className={`w-full pl-9 pr-3 py-2 rounded-xl text-sm border outline-none transition-colors ${
-                dark
-                  ? "bg-white/5 border-white/10 text-white placeholder-gray-500 focus:border-white/25"
-                  : "bg-black/4 border-black/8 text-gray-900 placeholder-gray-500 focus:border-black/20"
-              }`}
+              style={{ ...inputStyle, paddingLeft: "36px" }}
             />
           </div>
-          <div className="flex gap-2 items-center flex-wrap">
-            {/* Filter buttons */}
-                        <div
-              className={`relative flex rounded-xl overflow-hidden border ${
-                dark ? "border-white/10" : "border-black/8"
-              }`}
-            >
-              {/* Sliding Pill */}
-              <div
-                className={`absolute top-0 bottom-0 rounded-xl transition-all duration-500 ease-[cubic-bezier(.22,1,.36,1)]
-                  ${
-                    dark
-                      ? "bg-white"
-                      : "bg-emerald-500"
-                  }`}
-                style={{
-                  width: "33.333%",
-                  transform:
-                    filter === "all"
-                      ? "translateX(0%)"
-                      : filter === "active"
-                      ? "translateX(100%)"
-                      : "translateX(200%)",
-                }}
-              />
 
-              {filterBtns.map((f) => (
+          {/* Filter + Sort + Delete All */}
+          <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+            {/* Sliding filter pill */}
+            <div style={{
+              position: "relative",
+              display: "flex",
+              borderRadius: "12px",
+              overflow: "hidden",
+              border: dark ? "1px solid rgba(255,255,255,0.10)" : "1px solid rgba(0,0,0,0.08)",
+              flexShrink: 0,
+            }}>
+              <div style={{
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                width: "33.333%",
+                borderRadius: "10px",
+                background: dark ? "white" : "#10b981",
+                transform: filter === "all" ? "translateX(0%)" : filter === "active" ? "translateX(100%)" : "translateX(200%)",
+                transition: "transform 0.4s cubic-bezier(.22,1,.36,1)",
+              }} />
+              {filterBtns.map(({ key, label }) => (
                 <button
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  className={`relative z-10 px-4 py-2 text-xs font-semibold rounded-full flex-1 transition-colors duration-300 ${
-                    filter === f
-                      ? dark
-                        ? "text-black"
-                        : "text-white"
-                      : dark
-                        ? "text-gray-400"
-                        : "text-gray-700"
-                  }`}
+                  key={key}
+                  onClick={() => setFilter(key)}
+                  style={{
+                    position: "relative",
+                    zIndex: 1,
+                    padding: "7px 14px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    background: "none",
+                    border: "none",
+                    color: filter === key ? (dark ? "black" : "white") : (dark ? "#9ca3af" : "#374151"),
+                    transition: "color 0.3s",
+                    whiteSpace: "nowrap",
+                  }}
                 >
-                  {f === "all"
-                    ? "All"
-                    : f === "active"
-                    ? "Active"
-                    : "Done"}
+                  {label}
                 </button>
               ))}
             </div>
+
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
               aria-label="Sort tasks"
-              className={`px-3 py-1.5 rounded-xl text-xs border outline-none transition-colors ${
-                dark
-                  ? "bg-white/5 border-white/10 text-white"
-                  : "bg-black/4 border-black/8 text-gray-900"
-              }`}
+              style={{ ...inputStyle, width: "auto", padding: "7px 10px", fontSize: "13px", flex: 1, minWidth: "100px" }}
             >
               <option value="newest">Newest</option>
               <option value="oldest">Oldest</option>
@@ -938,21 +1093,29 @@ const AppPage = ({ dark, toggleDark, onHome, addToast }) => {
               <option value="due">Due Date</option>
               <option value="completed">Completed</option>
             </select>
+
             <button
-  onClick={() => setDeleteAllOpen(true)}
-  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
-    dark
-      ? "bg-red-500/20 text-red-300 border border-red-500/30"
-      : "bg-red-100 text-red-600 border border-red-200"
-  }`}
->
-  Delete All
-</button>
+              onClick={() => setDeleteAllOpen(true)}
+              style={{
+                padding: "7px 12px",
+                borderRadius: "12px",
+                fontSize: "13px",
+                fontWeight: 600,
+                cursor: "pointer",
+                border: dark ? "1px solid rgba(239,68,68,0.30)" : "1px solid rgba(239,68,68,0.20)",
+                background: dark ? "rgba(239,68,68,0.20)" : "rgba(239,68,68,0.08)",
+                color: dark ? "#fca5a5" : "#dc2626",
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+              }}
+            >
+              Delete All
+            </button>
           </div>
         </div>
 
         {/* Task list */}
-        <ul className="flex flex-col gap-2" role="list" aria-label="Task list">
+        <ul style={{ display: "flex", flexDirection: "column", gap: "8px", padding: 0, margin: 0, width: "100%" }} role="list" aria-label="Task list">
           {visibleTasks.length === 0 ? (
             <EmptyState dark={dark} />
           ) : (
@@ -974,16 +1137,16 @@ const AppPage = ({ dark, toggleDark, onHome, addToast }) => {
             ))
           )}
         </ul>
-        <footer className="mt-auto pt-6 border-t border-white/10 text-center">
-        <p className="text-xs text-gray-500">
-          <span className="font-semibold">
-            Developed by Dasari Vamsi Krishna
-          </span>
-          {" · "}
-          All rights reserved © 2026
-        </p>
-      </footer>
+
+        <footer style={{ marginTop: "16px", paddingTop: "16px", borderTop: dark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.08)", textAlign: "center" }}>
+          <p style={{ fontSize: "12px", color: "#6b7280" }}>
+            <span style={{ fontWeight: 600 }}>Developed by Dasari Vamsi Krishna</span>
+            {" · "}All rights reserved © 2026
+          </p>
+        </footer>
       </div>
+
+      {/* Modals */}
       <AddTaskModal open={addOpen} onClose={() => setAddOpen(false)} onAdd={addTask} dark={dark} />
       <DeleteModal
         open={!!deleteTarget}
@@ -993,36 +1156,48 @@ const AppPage = ({ dark, toggleDark, onHome, addToast }) => {
         dark={dark}
       />
       <DeleteModal
-  open={deleteAllOpen}
-  onClose={() => setDeleteAllOpen(false)}
-  onConfirm={() => {
-    setTasks([]);
-    addToast("All tasks deleted", "danger");
-    setDeleteAllOpen(false);
-  }}
-  taskTitle="All Tasks"
-  dark={dark}
-/>
+        open={deleteAllOpen}
+        onClose={() => setDeleteAllOpen(false)}
+        onConfirm={() => {
+          setTasks([]);
+          addToast("All tasks deleted", "danger");
+          setDeleteAllOpen(false);
+        }}
+        taskTitle="All Tasks"
+        dark={dark}
+      />
+
+      {/* FAB */}
       <button
-  onClick={() => setAddOpen(true)}
-  className={`fixed bottom-6 right-6 z-50 w-18 h-18 md:w-16 md:h-16 rounded-full flex items-center justify-center shadow-2xl transition-all hover:scale-110 ${
-    dark
-      ? "bg-white text-black"
-      : "bg-emerald-500 text-white"
-  }`}
->
-  <svg
-    className="w-8 h-8"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="3"
-    strokeLinecap="round"
-  >
-    <line x1="12" y1="5" x2="12" y2="19" />
-    <line x1="5" y1="12" x2="19" y2="12" />
-  </svg>
-</button>
+        onClick={() => setAddOpen(true)}
+        aria-label="Add new task"
+        style={{
+          position: "fixed",
+          bottom: "24px",
+          right: "20px",
+          zIndex: 50,
+          width: "60px",
+          height: "60px",
+          borderRadius: "50%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: dark ? "white" : "#10b981",
+          color: dark ? "black" : "white",
+          border: "none",
+          cursor: "pointer",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+          transition: "transform 0.2s ease",
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.1)"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
+      >
+        <svg style={{ width: "28px", height: "28px" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      </button>
+
       <CelebrationModal open={celebOpen} onClose={() => setCelebOpen(false)} dark={dark} />
     </div>
   );
@@ -1030,16 +1205,46 @@ const AppPage = ({ dark, toggleDark, onHome, addToast }) => {
 
 // ── Home Page ─────────────────────────────────────────────────────────────────
 const HomePage = ({ dark, toggleDark, onEnter }) => (
-  <div className={`min-h-screen flex flex-col items-center justify-center px-4 overflow-x-hidden transition-colors ${!dark ? "bg-gradient-to-br from-white via-gray-50 to-gray-100" : ""}`} style={dark ? { background: "#1c1c1e" } : {}}>
+  <div style={{
+    minHeight: "100vh",
+    width: "100%",
+    maxWidth: "100vw",
+    overflowX: "hidden",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "80px 16px 32px",
+    boxSizing: "border-box",
+    background: dark ? "#1c1c1e" : "linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%)",
+    position: "relative",
+  }}>
     <Navbar dark={dark} toggleDark={toggleDark} showHome={false} />
 
-    {/* Subtle decorative blobs */}
-    <div className={`absolute top-20 -left-20 w-72 h-72 rounded-full blur-3xl pointer-events-none ${dark ? "bg-white/3" : "bg-black/4"}`} />
-    <div className={`absolute bottom-20 -right-20 w-80 h-80 rounded-full blur-3xl pointer-events-none ${dark ? "bg-white/2" : "bg-black/3"}`} />
+    {/* Decorative blobs */}
+    <div style={{
+      position: "absolute", top: "80px", left: "-80px",
+      width: "280px", height: "280px", borderRadius: "50%",
+      background: dark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.04)",
+      filter: "blur(40px)", pointerEvents: "none",
+    }} />
+    <div style={{
+      position: "absolute", bottom: "80px", right: "-80px",
+      width: "320px", height: "320px", borderRadius: "50%",
+      background: dark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.03)",
+      filter: "blur(40px)", pointerEvents: "none",
+    }} />
 
+    {/* Hero card */}
     <div
-      className="relative z-10 rounded-3xl p-10 text-center max-w-md w-full"
       style={{
+        position: "relative",
+        zIndex: 1,
+        borderRadius: "28px",
+        padding: "40px 32px",
+        textAlign: "center",
+        width: "100%",
+        maxWidth: "360px",
         background: dark ? "rgba(18,18,18,0.72)" : "rgba(255,255,255,0.72)",
         backdropFilter: "blur(32px) saturate(200%)",
         WebkitBackdropFilter: "blur(32px) saturate(200%)",
@@ -1048,51 +1253,70 @@ const HomePage = ({ dark, toggleDark, onEnter }) => (
           ? "0 40px 100px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08)"
           : "0 40px 100px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,1)",
         animation: "fadeInUp 0.7s cubic-bezier(.34,1.56,.64,1) both",
+        boxSizing: "border-box",
       }}
     >
-      <div className="flex justify-center mb-6">
-        <div
-          className="w-18 h-18 md:w-16 md:h-16 rounded-2xl flex items-center justify-center backdrop-blur-xl"
-          style={{
-            background: dark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)",
-            backdropFilter: "blur(12px)",
-            border: dark ? "1px solid rgba(255,255,255,0.18)" : "1px solid rgba(0,0,0,0.10)",
-            boxShadow: dark
-              ? "inset 0 1px 0 rgba(255,255,255,0.18)"
-              : "inset 0 1px 0 rgba(255,255,255,0.9), 0 4px 16px rgba(0,0,0,0.08)",
-          }}
-        >
+      {/* Icon */}
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        marginBottom: "24px",
+      }}>
+        <div style={{
+          width: "64px",
+          height: "64px",
+          borderRadius: "16px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: dark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)",
+          backdropFilter: "blur(12px)",
+          border: dark ? "1px solid rgba(255,255,255,0.18)" : "1px solid rgba(0,0,0,0.10)",
+          boxShadow: dark
+            ? "inset 0 1px 0 rgba(255,255,255,0.18)"
+            : "inset 0 1px 0 rgba(255,255,255,0.9), 0 4px 16px rgba(0,0,0,0.08)",
+        }}>
           <Logo dark={dark} />
         </div>
       </div>
-      <h1 className={`text-3xl font-bold mb-3 tracking-tight ${dark ? "text-white" : "text-gray-900"}`}>
+
+      <h1 style={{ fontSize: "30px", fontWeight: 700, marginBottom: "12px", letterSpacing: "-0.02em", color: dark ? "white" : "#111827" }}>
         To-do list
       </h1>
-      <p className={`text-base mb-8 ${dark ? "text-gray-400" : "text-gray-600"}`}>
+      <p style={{ fontSize: "16px", marginBottom: "32px", color: dark ? "#9ca3af" : "#6b7280" }}>
         Stay organised, stay ahead ✨
       </p>
+
       <button
         onClick={onEnter}
-        className={`lg-btn inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full text-base font-semibold ${dark ? "lg-primary-dark" : "lg-primary-light"}`}
+        className={`lg-btn ${dark ? "lg-primary-dark" : "lg-primary-light"}`}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "10px",
+          padding: "14px 32px",
+          borderRadius: "999px",
+          fontSize: "16px",
+          fontWeight: 600,
+          cursor: "pointer",
+          width: "100%",
+          justifyContent: "center",
+          boxSizing: "border-box",
+        }}
       >
         <span>Get Started</span>
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg style={{ width: "20px", height: "20px" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
         </svg>
       </button>
     </div>
 
-    <footer className="w-full max-w-md mt-8 pt-5 border-t border-black/10 dark:border-white/10 text-center">
-  <p className={`text-xs ${
-    dark ? "text-gray-500" : "text-gray-500"
-  }`}>
-    <span className="font-semibold">
-      Developed by Dasari Vamsi Krishna
-    </span>
-    {" "}·{" "}
-    All rights reserved © 2026
-  </p>
-</footer>
+    <footer style={{ marginTop: "32px", textAlign: "center" }}>
+      <p style={{ fontSize: "12px", color: "#6b7280" }}>
+        <span style={{ fontWeight: 600 }}>Developed by Dasari Vamsi Krishna</span>
+        {" · "}All rights reserved © 2026
+      </p>
+    </footer>
   </div>
 );
 
@@ -1126,14 +1350,8 @@ export default function TaskFlow() {
   }, []);
 
   return (
-  <div
-    className={`${dark ? "dark" : ""}`}
-    style={{
-      width: "100%",
-      overflowX: "hidden",
-    }}
-  >
-      <GlobalStyles/>
+    <div style={{ width: "100%", maxWidth: "100vw", overflowX: "hidden" }}>
+      <GlobalStyles />
       {page === "home" ? (
         <HomePage dark={dark} toggleDark={toggleDark} onEnter={() => setPage("app")} />
       ) : (
