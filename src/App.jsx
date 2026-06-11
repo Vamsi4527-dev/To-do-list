@@ -250,7 +250,7 @@ const ToastContainer = ({ toasts, removeToast }) => (
 
 // ── Navbar ────────────────────────────────────────────────────────────────────
 const Navbar = ({ dark, toggleDark, onHome, showHome, onAddTask }) => (
-  <nav className="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4">
+  <nav className="fixed top-3 left-0 right-0 z-50 px-4">
     <div className={`flex items-center justify-between px-6 py-4 rounded-2xl ${dark ? "lg-header-dark" : "lg-header-light"}`}>
       {/* Left — logo + title */}
       <div className="flex items-center gap-2.5">
@@ -596,7 +596,7 @@ const TaskItem = ({ task, dark, onToggle, onDelete, onEdit, onDragStart, onDragO
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="flex items-center gap-1">
         <button
           onClick={() => setEditing(true)}
           aria-label="Edit task"
@@ -781,7 +781,7 @@ const AppPage = ({ dark, toggleDark, onHome, addToast }) => {
     <div className={`min-h-screen transition-colors ${!dark ? "bg-gradient-to-br from-gray-50 via-white to-gray-100" : ""}`} style={dark ? { background: "#1c1c1e" } : {}}>
       <Navbar dark={dark} toggleDark={toggleDark} onHome={onHome} showHome onAddTask={() => setAddOpen(true)} />
 
-      <div className="max-w-2xl mx-auto px-4 pt-24 pb-8 flex flex-col gap-4 min-h-[calc(100vh-120px)]">
+      <div className="w-full max-w-2xl mx-auto px-4 pt-24 pb-8 flex flex-col gap-4 min-h-[calc(100vh-120px)] overflow-x-hidden">
 
         {/* Stats — outer glass wrapper with 4 individual cards + progress bar */}
         <div
@@ -937,6 +937,16 @@ const AppPage = ({ dark, toggleDark, onHome, addToast }) => {
               <option value="due">Due Date</option>
               <option value="completed">Completed</option>
             </select>
+            <button
+  onClick={() => setDeleteAllOpen(true)}
+  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
+    dark
+      ? "bg-red-500/20 text-red-300 border border-red-500/30"
+      : "bg-red-100 text-red-600 border border-red-200"
+  }`}
+>
+  Delete All
+</button>
           </div>
         </div>
 
@@ -981,6 +991,17 @@ const AppPage = ({ dark, toggleDark, onHome, addToast }) => {
         taskTitle={deleteTask?.title}
         dark={dark}
       />
+      <DeleteModal
+  open={deleteAllOpen}
+  onClose={() => setDeleteAllOpen(false)}
+  onConfirm={() => {
+    setTasks([]);
+    addToast("All tasks deleted", "danger");
+    setDeleteAllOpen(false);
+  }}
+  taskTitle="All Tasks"
+  dark={dark}
+/>
       <button
   onClick={() => setAddOpen(true)}
   className={`fixed bottom-6 right-6 z-50 w-18 h-18 md:w-16 md:h-16 rounded-full flex items-center justify-center shadow-2xl transition-all hover:scale-110 ${
@@ -1104,8 +1125,8 @@ export default function TaskFlow() {
   }, []);
 
   return (
-    <div className={dark ? "dark" : ""}>
-      <GlobalStyles />
+  <div className={`${dark ? "dark" : ""} overflow-x-hidden`}>
+      <GlobalStyles/>
       {page === "home" ? (
         <HomePage dark={dark} toggleDark={toggleDark} onEnter={() => setPage("app")} />
       ) : (
